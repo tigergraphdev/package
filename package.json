@@ -1,0 +1,22 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tigergraphdev/package.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tigergraphdev/package/issues"
+  },
+  "homepage": "https://github.com/tigergraphdev/package#readme",
+  "dependencies": {
+    "axios": "^0.20.0"
+  }
+}
