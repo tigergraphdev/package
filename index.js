@@ -1,8 +1,8 @@
 
-//import axios from 'axios';
 const axios = require('axios');
+const requester = require('./src/requests');
 let secret = "jkat6nvhnip6c2c2gtqoeukm31lqunfr";
-let token = "epgavo88obs878tl8qrah8vrmhqeqlvv";
+let token = "96dl509vgh9rmptnka18l1ug6n87r766";
 let postToken = 'r90ehrhbaeme6tktjhmpbimlv9015akr';
 let server = "https://socialfriendsfinder.i.tgcloud.io";
 
@@ -17,77 +17,25 @@ const errorHandler =() => {
 }
 
 
-
 const getToken = async () => {
     try {
-        const response = await axios.get(`${server}:9000/requesttoken?secret=${secret}`);
-        token = response.data.token ;
-        console.log(response.data);
 
-        
+        const response = await requester.requestToken({
+            baseUrl: server,
+            secret: secret
+        });
+        console.log(response);
     } catch (error) {
-           console.log(error.response.data);
-    }
-}
-
-const getPostToken = async() => {
-
-    try {
-        const response = await axios.post(`${server}:9000/requesttoken?secret=${secret}`);
-        token = response.data.token ;
-        console.log(response.data);
-
-        
-    } catch (error) {
-           console.log(error.response.data);
+        console.log(error);
     }
 }
 
 const echo = async () => { 
 
     try {
-        const response = await axios.get(`${server}:9000/echo`,{
-            headers: {
-                "Authorization": `Bearer ${token}`,
-            },
-        });
-        
-        console.log(response);
-
-    } catch (error) {
-        
-        console.log(error.response.data)
-    }
-
-}
-
-const getVertices = async () => {
-    //curl -X GET "http://server_ip:9000/graph/{graph_name}/vertices/{vertex_type}[/{vertex_id}]
-
-    try {
-        const response = await axios.get(`${server}:9000/graph/vertices/Person`, {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-            },
-            params : {
-                "limit" : "3"
-            }
-        }); 
-
-        console.log(response.data);
-    } catch (error) {
-        console.log(error);
-    }
-
-}
-
-const getVersion = async () => {
-
-    try {
-        const response = await axios.get(`${server}:9000/version`,{
-            headers : {
-                "Authorization": `Bearer ${token}`,
-            },
+        const response = await requester.requestEcho({
+            baseUrl: server,
+            token: token
         });
         
         console.log(response.data);
@@ -99,21 +47,17 @@ const getVersion = async () => {
 
 }
 
-const deleteVerticesByType = async ({graph_name = '', vertex_type = ''}) => {
+const deleteVerticesByType = async ({graphName = '', vertexType = ''}) => {
 
     try {
-        let url = `${server}:9000/graph/${graph_name}/delete_by_type/vertices/${vertex_type}`;
-        if(graph_name == '')
-        {
-            url = `${server}:9000/graph/delete_by_type/vertices/${vertex_type}`;
-        }
-
-        const response = await axios.delete(url, {
-            "headers": {
-                "Authorization": `Bearer ${token}`,
-            },
+       
+        const response = requester.requestDeleteVerticesByType({
+            baseUrl: server,
+            token: token,
+            graphName: graphName,
+            vertexType: vertexType
         });
-
+        
         console.log(response.data)
         
     } catch (error) {
@@ -122,30 +66,16 @@ const deleteVerticesByType = async ({graph_name = '', vertex_type = ''}) => {
     }
 } 
 // curl -X POST 'http://localhost:9000/builtins/socialNet' -d  '{"function":"stat_vertex_attr","type":"Person"}'
-const getStats = async ({graph_name = "", func, type}) => {
+const getStats = async ({graphName = "", func, type}) => {
 
     try {
 
-        let url = `${server}:9000/builtins/${graph_name}`;
-        if(graph_name == '')
-        {
-            url = `${server}:9000/builtins`;
-        }
-
-        let data = JSON.stringify({
-            "function" : func,
-            "type" : type
-        });
-
-
-        const response = await axios({
-            method: 'post',
-            url: url,
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type" : 'application/json'
-            },
-            data: data
+        const response = await requester.requestStats({
+            baseUrl: server,
+            token: token,
+            graphName: graphName,
+            func: func,
+            type: type
         });
 
         console.log(response.data);
@@ -156,22 +86,14 @@ const getStats = async ({graph_name = "", func, type}) => {
     }
 }
 
-const getProcessList = async ({graph_name = "", func, type}) => {
+const getProcessList = async ({graphName = ""}) => {
 
     try {
 
-        let url = `${server}:9000/showprocesslist`;
-        if(graph_name == '')
-        {
-            url = `${server}:9000/showprocesslist`;
-        }
-
-        const response = await axios({
-            method: 'get',
-            url: url,
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
+        const response = await requester.requestQueryRunningList({
+            baseUrl: server,
+            token: token,
+            graphName: graphName
         });
 
         console.log(response.data);
@@ -182,11 +104,11 @@ const getProcessList = async ({graph_name = "", func, type}) => {
     }
 }
 
-const upsertVertices = async ({graph_name = ""}) => {
+const upsertVertices = async ({graphName = ""}) => {
 
     try {
-        let url = `${server}:9000/graph/${graph_name}`;
-        if(graph_name == '')
+        let url = `${server}:9000/graph/${graphName}`;
+        if(graphName == '')
         {
             url = `${server}:9000/builtins`;
         }
@@ -216,9 +138,13 @@ const upsertVertices = async ({graph_name = ""}) => {
 const main = async () => {
     //await getToken();
     //await echo();
-    await getProcessList({});
-    //await getVertices();
-    //await getPostToken();
+    /*await getStats({
+        graphName: "connectivity",
+        func: "stat_vertex_number",
+        type: "Person"
+    });*/
+
+    //await getProcessList({});
     //await upsertVertices({});
 }
 
