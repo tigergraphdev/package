@@ -1,6 +1,6 @@
 
-import axios from 'axios';
-//const axios = require('axios');
+//import axios from 'axios';
+const axios = require('axios');
 
 module.exports.requestToken = ({baseUrl, secret}) => {
     return axios.get(`${baseUrl}:9000/requesttoken?secret=${secret}`);
@@ -14,12 +14,12 @@ module.exports.requestEcho = ({baseUrl, token}) => {
     });
 }
 
-module.exports.requestDeleteVerticesByType = ({baseUrl, graph_name = '', vertex_type}) => {
-    let url = `${baseUrl}:9000/graph/${graph_name}/delete_by_type/vertices/${vertex_type}`;
+module.exports.requestDeleteVerticesByType = ({baseUrl, token, graphName = '', vertexType}) => {
+    let url = `${baseUrl}:9000/graph/${graphName}/delete_by_type/vertices/${vertexType}`;
     
-    if(graph_name == '')
+    if(graphName == '')
     {
-        url = `${baseUrl}:9000/graph/delete_by_type/vertices/${vertex_type}`;
+        url = `${baseUrl}:9000/graph/delete_by_type/vertices/${vertexType}`;
     }
 
     return axios.delete(url, {
@@ -29,9 +29,9 @@ module.exports.requestDeleteVerticesByType = ({baseUrl, graph_name = '', vertex_
     });
 }
 
-module.exports.requestStats = ({baseUrl, graph_name, token, func, type}) => {
-    let url = `${baseUrl}:9000/builtins/${graph_name}`;
-    if(graph_name == '')
+module.exports.requestStats = ({baseUrl, graphName, token, func, type}) => {
+    let url = `${baseUrl}:9000/builtins/${graphName}`;
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/builtins`;
     }
@@ -54,16 +54,13 @@ module.exports.requestStats = ({baseUrl, graph_name, token, func, type}) => {
         
 }
 
-module.exports.requestUpsertData = ({baseUrl, token, graph_name, data, parameters}) => {
+module.exports.requestUpsertData = ({baseUrl, token, graphName, data, parameters}) => {
 
-    let url = `${baseUrl}:9000/graph/${graph_name}`;
-    if(graph_name == '')
+    let url = `${baseUrl}:9000/graph/${graphName}`;
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/graph`;
     }
-
-    let jsonData = JSON.stringify(data);
-
 
     return axios({
         url: url,
@@ -72,7 +69,7 @@ module.exports.requestUpsertData = ({baseUrl, token, graph_name, data, parameter
             "Authorization": `Bearer ${token}`,
             "Content-Type" : "application/json"
         },
-        data: jsonData,
+        data: data,
         params: parameters
     });
 
@@ -94,9 +91,9 @@ module.exports.requestRunInterpretedQuery = ({baseUrl, username, password, query
     });
 }
 
-module.exports.requestQueryRunningList = ({baseUrl, token ,graph_name }) => {
+module.exports.requestQueryRunningList = ({baseUrl, token ,graphName }) => {
     let url = `${baseUrl}:9000/showprocesslist`;
-    if(graph_name == '')
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/showprocesslist`;
     }
@@ -111,10 +108,10 @@ module.exports.requestQueryRunningList = ({baseUrl, token ,graph_name }) => {
 
 }
 
-module.exports.requestAbortQuery = ({baseUrl, token,graph_name, requestId }) => {
+module.exports.requestAbortQuery = ({baseUrl, token,graphName, requestId }) => {
     
-    let url = `${baseUrl}:9000/abortquery/${graph_name}`;
-    if(graph_name == '')
+    let url = `${baseUrl}:9000/abortquery/${graphName}`;
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/abortquery`;
     }
@@ -131,10 +128,10 @@ module.exports.requestAbortQuery = ({baseUrl, token,graph_name, requestId }) => 
     });
 }
 
-module.exports.requestAbortQueryByEndpoint = ({baseUrl, token,endpoint, graph_name}) => {
+module.exports.requestAbortQueryByEndpoint = ({baseUrl, token,endpoint, graphName}) => {
     
-    let url = `${baseUrl}:9000/abortquery/${graph_name}`;
-    if(graph_name == '')
+    let url = `${baseUrl}:9000/abortquery/${graphName}`;
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/abortquery`;
     }
@@ -151,10 +148,10 @@ module.exports.requestAbortQueryByEndpoint = ({baseUrl, token,endpoint, graph_na
     });
 }
 
-module.exports.requestShortestPath = ({baseUrl, token,graph_name, data}) => {
+module.exports.requestShortestPath = ({baseUrl, token,graphName, data}) => {
     
-    let url = `${baseUrl}:9000/shortestpath/${graph_name}`;
-    if(graph_name == '')
+    let url = `${baseUrl}:9000/shortestpath/${graphName}`;
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/shortestpath`;
     }
@@ -170,9 +167,9 @@ module.exports.requestShortestPath = ({baseUrl, token,graph_name, data}) => {
 }
 
 
-module.exports.requestAllPaths = ({baseUrl, token,graph_name, data}) => {
-    let url = `${baseUrl}:9000/allpaths/${graph_name}`;
-    if(graph_name == '')
+module.exports.requestAllPaths = ({baseUrl, token,graphName, data}) => {
+    let url = `${baseUrl}:9000/allpaths/${graphName}`;
+    if(graphName == '')
     {
         url = `${baseUrl}:9000/allpaths`;
     }
