@@ -1,5 +1,9 @@
 
 const axios = require('axios');
+const { Verify } = require('crypto');
+const { getUpsertVertex, getUpsertVertices, getUpsertEdge, getUpsertEdges } = require('./src/logic/upsert');
+const { Edge } = require('./src/models/edges');
+const { Vertex } = require('./src/models/vertex');
 const requester = require('./src/requests');
 let secret = "jkat6nvhnip6c2c2gtqoeukm31lqunfr";
 let token = "96dl509vgh9rmptnka18l1ug6n87r766";
@@ -104,48 +108,118 @@ const getProcessList = async ({graphName = ""}) => {
     }
 }
 
-const upsertVertices = async ({graphName = ""}) => {
+const upsertVertex = async (vertex, graphName = "") => {
+    try {
+
+        const data = getUpsertVertex(vertex);
+        const response = await requester.requestUpsertData({
+            baseUrl: server,
+            token: token,
+            graphName: graphName,
+            data: data,
+        })
+
+        console.log(JSON.stringify(response.data.results));
+        
+
+    }catch(error){
+        console.log(error)
+
+    }
+}
+
+const upsertVertices = async (vertices, graphName = "") => {
+    try {
+
+        const data = getUpsertVertices(vertices);
+        const response = await requester.requestUpsertData({
+            baseUrl: server,
+            token: token,
+            graphName: graphName,
+            data: data,
+        })
+
+        console.log(JSON.stringify(response.data.results));
+        
+
+    }catch(error){
+        console.log(error)
+
+    }
+}
+
+const upsertEdge = async (edge, graphName = "") => {
+    try {
+
+        const data = getUpsertEdge(edge);
+        const response = await requester.requestUpsertData({
+            baseUrl: server,
+            token: token,
+            graphName: graphName,
+            data: data,
+        })
+
+        console.log(JSON.stringify(response.data.results));
+        
+
+    }catch(error){
+        console.log(error)
+
+    }
+}
+
+const upsertEdges = async (edges, graphName = "") => {
+    try {
+
+        const data = getUpsertEdges(edges);
+        const response = await requester.requestUpsertData({
+            baseUrl: server,
+            token: token,
+            graphName: graphName,
+            data: data,
+        })
+
+        console.log(JSON.stringify(response.data.results));
+        
+
+    }catch(error){
+        console.log(error)
+
+    }
+}
+
+const runInterpretedQuery = async ({query, params}) => {
 
     try {
-        let url = `${server}:9000/graph/${graphName}`;
-        if(graphName == '')
-        {
-            url = `${server}:9000/builtins`;
-        }
-
-        let data = JSON.stringify({
-
+        let username = "tigergraph";
+        let password = "1098101We";
+        const response = await requester.requestRunInterpretedQuery({
+            baseUrl: server,
+            username: username,
+            password: password,
+            query: query,
+            parameters: params
         });
 
+        console.log(response.data);
+        console.log(JSON.stringify( response.data.results));
 
-        const response = await axios.post(url, {
-            "headers": {
-                "Authorization": `Bearer ${postToken}`,
-            },
-        });
-
-        console.log(response)
-        
     } catch (error) {
-        
         console.log(error);
+        
     }
+
+}
+
+const getShortestPath = ({sourceVertices = [], targetVertices = [], vertexFilter, edgeFilter, maxLength}) => {
+
 }
 
 
 
 
 const main = async () => {
-    //await getToken();
-    //await echo();
-    /*await getStats({
-        graphName: "connectivity",
-        func: "stat_vertex_number",
-        type: "Person"
-    });*/
-
-    //await getProcessList({});
-    //await upsertVertices({});
+    
 }
 
 main();
