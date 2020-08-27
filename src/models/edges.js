@@ -1,12 +1,12 @@
+const { Entity } = require("./entity");
 const { Vertex } = require("./vertex");
 
-class Edge {
+class Edge extends Entity {
 
-    constructor({ sourceVertex = new Vertex() , targetVertex = new Vertex(), type = "", attr = {}}){
+    constructor({ sourceVertex = new Vertex(), targetVertex = new Vertex(), type = "", attr = []}){
+        super({type: type, attr: attr});
         this.sourceVertex = sourceVertex;
         this.targetVertex = targetVertex;
-        this.type = type;
-        this.attr = attr;
     }
 }
 
