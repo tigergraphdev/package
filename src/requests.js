@@ -1,13 +1,24 @@
 
 //import axios from 'axios';
 const axios = require('axios');
+const { builtinModules } = require('module');
+
+const port = {
+    rest: '14240',
+    gs: '9000'
+}
+
+module.exports.setPort = ({restPort, gsPort}) => {
+    port.rest = restPort;
+    port.gs = gsPort;
+}
 
 module.exports.requestToken = ({baseUrl, secret}) => {
-    return axios.get(`${baseUrl}:9000/requesttoken?secret=${secret}`);
+    return axios.get(`${baseUrl}:${port.gs}/requesttoken?secret=${secret}`);
 }
 
 module.exports.requestEcho = ({baseUrl, token}) => {
-    return axios.get(`${baseUrl}:9000/echo`,{
+    return axios.get(`${baseUrl}:${port.gs}/echo`,{
         headers: {
             "Authorization": `Bearer ${token}`,
         },
@@ -15,11 +26,11 @@ module.exports.requestEcho = ({baseUrl, token}) => {
 }
 
 module.exports.requestDeleteVerticesByType = ({baseUrl, token, graphName = '', vertexType}) => {
-    let url = `${baseUrl}:9000/graph/${graphName}/delete_by_type/vertices/${vertexType}`;
+    let url = `${baseUrl}:${port.gs}/graph/${graphName}/delete_by_type/vertices/${vertexType}`;
     
     if(graphName == '')
     {
-        url = `${baseUrl}:9000/graph/delete_by_type/vertices/${vertexType}`;
+        url = `${baseUrl}:${port.gs}/graph/delete_by_type/vertices/${vertexType}`;
     }
 
     return axios.delete(url, {
@@ -30,10 +41,10 @@ module.exports.requestDeleteVerticesByType = ({baseUrl, token, graphName = '', v
 }
 
 module.exports.requestStats = ({baseUrl, graphName, token, func, type}) => {
-    let url = `${baseUrl}:9000/builtins/${graphName}`;
+    let url = `${baseUrl}:${port.gs}/builtins/${graphName}`;
     if(graphName == '')
     {
-        url = `${baseUrl}:9000/builtins`;
+        url = `${baseUrl}:${port.gs}/builtins`;
     }
 
     let data = JSON.stringify({
@@ -54,12 +65,12 @@ module.exports.requestStats = ({baseUrl, graphName, token, func, type}) => {
         
 }
 
-module.exports.requestUpsertData = ({baseUrl, token, graphName, data, parameters}) => {
+module.exports.requestUpsertData = ({baseUrl = '', token = '', graphName = '', data = {}, parameters = {}}) => {
 
-    let url = `${baseUrl}:9000/graph/${graphName}`;
+    let url = `${baseUrl}:${port.gs}/graph/${graphName}`;
     if(graphName == '')
     {
-        url = `${baseUrl}:9000/graph`;
+        url = `${baseUrl}:${port.gs}/graph`;
     }
 
     return axios({
@@ -75,9 +86,9 @@ module.exports.requestUpsertData = ({baseUrl, token, graphName, data, parameters
 
 }
 
-module.exports.requestRunInterpretedQuery = ({baseUrl, username, password, query}) => {
+module.exports.requestRunInterpretedQuery = ({baseUrl, username, password, query, parameters = {}}) => {
 
-    let url = `${baseUrl}:14240/gsqlserver/interpreted_query`;
+    let url = `${baseUrl}:${port.rest}/gsqlserver/interpreted_query`;
 
     return axios({
         url: url,
@@ -92,10 +103,10 @@ module.exports.requestRunInterpretedQuery = ({baseUrl, username, password, query
 }
 
 module.exports.requestQueryRunningList = ({baseUrl, token ,graphName }) => {
-    let url = `${baseUrl}:9000/showprocesslist`;
+    let url = `${baseUrl}:${port.gs}/showprocesslist`;
     if(graphName == '')
     {
-        url = `${baseUrl}:9000/showprocesslist`;
+        url = `${baseUrl}:${port.gs}/showprocesslist`;
     }
 
     return axios({
@@ -110,10 +121,10 @@ module.exports.requestQueryRunningList = ({baseUrl, token ,graphName }) => {
 
 module.exports.requestAbortQuery = ({baseUrl, token,graphName, requestId }) => {
     
-    let url = `${baseUrl}:9000/abortquery/${graphName}`;
+    let url = `${baseUrl}:${port.gs}/abortquery/${graphName}`;
     if(graphName == '')
     {
-        url = `${baseUrl}:9000/abortquery`;
+        url = `${baseUrl}:${port.gs}/abortquery`;
     }
 
     return axios({
@@ -130,10 +141,10 @@ module.exports.requestAbortQuery = ({baseUrl, token,graphName, requestId }) => {
 
 module.exports.requestAbortQueryByEndpoint = ({baseUrl, token,endpoint, graphName}) => {
     
-    let url = `${baseUrl}:9000/abortquery/${graphName}`;
+    let url = `${baseUrl}:${port.gs}/abortquery/${graphName}`;
     if(graphName == '')
     {
-        url = `${baseUrl}:9000/abortquery`;
+        url = `${baseUrl}:${port.gs}/abortquery`;
     }
 
     return axios({
@@ -148,39 +159,25 @@ module.exports.requestAbortQueryByEndpoint = ({baseUrl, token,endpoint, graphNam
     });
 }
 
-module.exports.requestShortestPath = ({baseUrl, token,graphName, data}) => {
-    
-    let url = `${baseUrl}:9000/shortestpath/${graphName}`;
-    if(graphName == '')
+module.exports.requestSchema = ({baseUrl, username, password, graphName , type = ""}) => {
+
+    let url = `${baseUrl}:${port.rest}/gsqlserver/gsql/schema`
+    const parameters = {
+        'graph': graphName
+    }
+
+    if(type != '')
     {
-        url = `${baseUrl}:9000/shortestpath`;
+        parameters['type'] = type; 
     }
 
     return axios({
         method: 'get',
-        url: url,
-        headers: {
-            "Authorization": `Bearer ${token}`
+        url:url,
+        auth: {
+            username: username,
+            password: password
         },
-        data: data
+        params: parameters
     });
-}
-
-
-module.exports.requestAllPaths = ({baseUrl, token,graphName, data}) => {
-    let url = `${baseUrl}:9000/allpaths/${graphName}`;
-    if(graphName == '')
-    {
-        url = `${baseUrl}:9000/allpaths`;
-    }
-
-    return axios({
-        method: 'get',
-        url: url,
-        headers: {
-            "Authorization": `Bearer ${token}`
-        },
-        data: data
-    });
-
 }
